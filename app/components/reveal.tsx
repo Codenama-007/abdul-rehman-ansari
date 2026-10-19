@@ -10,9 +10,10 @@ type RevealProps = {
 };
 
 /**
- * Fade + translate-Y(16px → 0) on first scroll into view.
- * Only opacity/transform animate; transform stays gated behind `shown` so the
- * element is still painted normally for reduced-motion and no-JS cases.
+ * Fade + translate-Y(16px → 0) the first time the element scrolls into view.
+ * Only opacity/transform animate. Reduced motion is handled in CSS
+ * (`motion-reduce:transition-none` plus the global media query in globals.css),
+ * so no motion query is needed here.
  */
 export function Reveal({ children, delay = 0, className = "" }: RevealProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -21,14 +22,6 @@ export function Reveal({ children, delay = 0, className = "" }: RevealProps) {
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
-
-    const reduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (reduced || typeof IntersectionObserver === "undefined") {
-      setShown(true);
-      return;
-    }
 
     const observer = new IntersectionObserver(
       (entries) => {
