@@ -1,12 +1,36 @@
 @import "tailwindcss";
 
+/* ===========================================================================
+   Afrofuturismo Digital — design system
+   Palette, type, motion and layout contract live in this file.
+
+   z-index contract ... base 0 / sticky-nav 100 / overlay 200 / modal 300 / toast 500
+   corner radius ...... 0.75rem (12px)  → Tailwind `rounded-xl`
+   spacing base unit .. 0.5rem (8px)
+   containment ........ max-width 80rem (1280px), 1.5rem inline padding
+   motion ............. transform + opacity only, spring-ish ease
+   =========================================================================== */
+
 :root {
-  --background: #08080a;
-  --foreground: #f4f1ea;
-  --muted: #a3a3ad;
-  --surface: #101014;
-  --line: #24242b;
-  --accent: #e8a33d;
+  /* Brand palette */
+  --obsidian: #0d0d0d;
+  --royal-purple: #6a0dad;
+  --electric-violet: #8f00ff;
+  --sahara-gold: #e6a817;
+  --warm-amber: #ffbf00;
+  --terracotta: #c1440e;
+  --deep-teal: #014d4e;
+  --sand: #c2b280;
+
+  /* Semantic roles */
+  --background: var(--obsidian);
+  --foreground: #f6f1e7;
+  --muted: #a89e8f;
+  --surface: #171009;
+  --surface-strong: #22160c;
+  --line: rgba(230, 168, 23, 0.2);
+  --line-strong: rgba(230, 168, 23, 0.45);
+  --primary-deep: #5e0b9a;
 }
 
 @theme inline {
@@ -14,32 +38,96 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
   --color-line: var(--line);
-  --color-accent: var(--accent);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-line-strong: var(--line-strong);
+  --color-primary: var(--royal-purple);
+  --color-primary-deep: var(--primary-deep);
+  --color-secondary: var(--sahara-gold);
+  --color-amber: var(--warm-amber);
+  --color-terracotta: var(--terracotta);
+  --color-teal: var(--deep-teal);
+  --color-violet: var(--electric-violet);
+  --color-sand: var(--sand);
+
+  --font-sans: var(--font-josefin);
+  --font-mono: var(--font-jetbrains);
+
+  --animate-rise: rise 540ms ease-out both;
+  --animate-twinkle: twinkle 5s ease-in-out infinite;
+  --animate-rhythm: rhythm 7s ease-in-out infinite;
+  --animate-orbit: orbit 90s linear infinite;
+  --animate-shimmer: shimmer 1.8s linear infinite;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes rhythm {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
 }
 
 @layer base {
   html {
+    background-color: var(--background);
     scroll-behavior: smooth;
   }
 
   body {
-    background: var(--background);
     color: var(--foreground);
-    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-josefin), ui-sans-serif, system-ui, sans-serif;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
 
   ::selection {
-    background: var(--accent);
-    color: #0b0b0d;
+    background: var(--sahara-gold);
+    color: var(--obsidian);
   }
 
   :focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 3px;
+    outline: 2px solid var(--sahara-gold);
+    outline-offset: 2px;
+    border-radius: 2px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -55,4 +143,60 @@
       transition-duration: 0.01ms !important;
     }
   }
+}
+
+/* Max-width containment: 1280px centred with 1.5rem side padding. */
+@utility container-page {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+/* Balanced vertical rhythm between sections. */
+@utility section-y {
+  padding-block: clamp(4rem, 8vw, 8rem);
+}
+
+/* Cosmic star field — layered radial dots on a repeating tile. */
+@utility starfield {
+  background-image:
+    radial-gradient(1.5px 1.5px at 24px 36px, rgba(246, 241, 231, 0.75), transparent),
+    radial-gradient(1px 1px at 132px 88px, rgba(230, 168, 23, 0.6), transparent),
+    radial-gradient(1.5px 1.5px at 210px 168px, rgba(143, 0, 255, 0.5), transparent),
+    radial-gradient(1px 1px at 76px 214px, rgba(246, 241, 231, 0.45), transparent),
+    radial-gradient(1px 1px at 268px 40px, rgba(255, 191, 0, 0.4), transparent);
+  background-size: 300px 300px;
+}
+
+/* Kente-inspired grid: fine gold warp, coarser accent weft. */
+@utility kente-grid {
+  background-image:
+    linear-gradient(to right, rgba(230, 168, 23, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(230, 168, 23, 0.07) 1px, transparent 1px),
+    linear-gradient(to right, rgba(143, 0, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(143, 0, 255, 0.06) 1px, transparent 1px);
+  background-size:
+    32px 32px,
+    32px 32px,
+    128px 128px,
+    128px 128px;
+}
+
+/* Ambient cosmic wash + vignette behind everything. */
+@utility site-backdrop {
+  background-image:
+    radial-gradient(120% 80% at 12% -10%, rgba(106, 13, 173, 0.35), transparent 60%),
+    radial-gradient(90% 70% at 88% 4%, rgba(1, 77, 78, 0.45), transparent 62%),
+    radial-gradient(80% 60% at 50% 108%, rgba(193, 68, 14, 0.22), transparent 70%),
+    radial-gradient(140% 100% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+/* Zig-zag tribal band used as a section divider. */
+@utility tribal-edge {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 6px,
+    rgba(230, 168, 23, 0.35) 6px 7px
+  );
 }

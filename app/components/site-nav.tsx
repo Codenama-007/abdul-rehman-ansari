@@ -2,9 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { navLinks, profile } from "@/app/content";
+import { CloseIcon, MenuIcon } from "@/app/components/icons";
+import { WeaveMark } from "@/app/components/patterns";
 
 export function SiteNav() {
   const [open, setOpen] = useState(false);
+  const [active, setActive] = useState<string>("");
 
   useEffect(() => {
     if (!open) return;
@@ -17,16 +20,39 @@ export function SiteNav() {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [open]);
 
+  // Scroll spy: the section crossing the middle of the viewport owns the indicator.
+  useEffect(() => {
+    const sections = navLinks
+      .map((link) => document.getElementById(link.href.slice(1)))
+      .filter((element): element is HTMLElement => element !== null);
+
+    if (sections.length === 0 || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        }
+      },
+      { rootMargin: "-45% 0px -50% 0px" },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 border-b border-line/70 bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-[100] border-b border-line bg-background/85 backdrop-blur-xl">
+      <div className="container-page flex h-16 items-center justify-between gap-3">
         <a
           href="#top"
-          className="flex min-w-0 items-center gap-2.5 rounded-lg"
+          className="flex min-w-0 items-center gap-2.5 rounded-xl"
           aria-label={`${profile.name} — back to top`}
         >
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-accent text-sm font-bold text-background">
-            AR
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-primary to-violet text-amber">
+            <WeaveMark className="h-4 w-4" />
           </span>
           <span className="truncate text-sm font-semibold tracking-tight sm:text-base">
             <span className="sm:hidden">{profile.shortName}</span>
@@ -35,15 +61,29 @@ export function SiteNav() {
         </a>
 
         <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="rounded-lg px-3 py-2 text-sm text-muted transition-colors hover:bg-surface hover:text-foreground"
-            >
-              {link.label}
-            </a>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = active === link.href.slice(1);
+            return (
+              <a
+                key={link.href}
+                href={link.href}
+                aria-current={isActive ? "true" : undefined}
+                className={`relative rounded-xl px-3.5 py-2 text-sm transition-colors duration-200 ${
+                  isActive
+                    ? "font-medium text-secondary"
+                    : "text-muted hover:text-foreground"
+                }`}
+              >
+                {link.label}
+                <span
+                  aria-hidden="true"
+                  className={`absolute inset-x-3.5 -bottom-0.5 h-0.5 rounded-full bg-secondary transition-transform duration-200 ${
+                    isActive ? "scale-x-100" : "scale-x-0"
+                  }`}
+                />
+              </a>
+            );
+          })}
         </nav>
 
         <button
@@ -52,42 +92,40 @@ export function SiteNav() {
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? "Close menu" : "Open menu"}
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-line text-foreground transition-colors hover:bg-surface md:hidden"
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-line-strong text-foreground transition-colors duration-200 hover:bg-surface md:hidden"
         >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            className="h-5 w-5"
-            aria-hidden="true"
-          >
-            {open ? (
-              <path d="M6 6l12 12M18 6L6 18" />
-            ) : (
-              <path d="M4 7h16M4 12h16M4 17h16" />
-            )}
-          </svg>
+          {open ? (
+            <CloseIcon className="h-5 w-5" />
+          ) : (
+            <MenuIcon className="h-5 w-5" />
+          )}
         </button>
       </div>
 
       {open ? (
-        <div id="mobile-nav" className="border-t border-line/70 md:hidden">
+        <div
+          id="mobile-nav"
+          className="border-t border-line bg-background/95 backdrop-blur-xl md:hidden"
+        >
           <nav
             aria-label="Mobile"
-            className="mx-auto flex w-full max-w-6xl flex-col px-4 py-2 sm:px-6"
+            className="container-page flex flex-col py-2"
           >
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className="flex min-h-11 items-center rounded-lg px-3 text-base text-muted transition-colors hover:bg-surface hover:text-foreground"
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = active === link.href.slice(1);
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setOpen(false)}
+                  className={`flex min-h-11 items-center rounded-xl px-3 text-base transition-colors duration-200 hover:bg-surface ${
+                    isActive ? "font-medium text-secondary" : "text-muted"
+                  }`}
+                >
+                  {link.label}
+                </a>
+              );
+            })}
           </nav>
         </div>
       ) : null}

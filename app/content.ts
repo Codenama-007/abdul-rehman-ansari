@@ -21,6 +21,7 @@ export const profile = {
   name: "Abdul Rehman Ansari",
   shortName: "Abdul Rehman",
   role: "Full-stack web developer",
+  era: "Beyond Time",
   headline: "I build fast, accessible products for the web.",
   intro:
     "I work across the stack with Next.js, React, Node.js, and Python. From real-time chat interfaces to video platforms and social feeds, I like turning an idea into something people can actually click through.",
@@ -33,6 +34,12 @@ export const profile = {
     { label: "Front end", value: "Next.js, React, HTML, CSS, JavaScript" },
     { label: "Back end", value: "Node.js, FastAPI, Python, MongoDB" },
     { label: "Projects", value: "Four product clones, built end to end" },
+  ],
+  principles: [
+    "Responsive by default",
+    "Accessible markup",
+    "Clean, typed components",
+    "APIs built to be consumed",
   ],
 };
 
